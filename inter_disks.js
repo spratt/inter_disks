@@ -1,8 +1,63 @@
 (function() {
     var canvas = document.getElementById('c');
     var context = canvas.getContext('2d');
+    var draw_centers = document.getElementById('draw_centers');
+    var draw_circles = document.getElementById('draw_circles');
+    var high_ch_points = document.getElementById('high_ch_points');
+    var draw_ch_edges = document.getElementById('draw_ch_edges');
+    var checkboxes = [
+        draw_centers, draw_circles, high_ch_points, draw_ch_edges
+    ];
 
     var centers = [];
+    var chPoints = [];
+
+    function clear() {
+        centers = [];
+        draw();
+    }
+
+    document.getElementById('clear').addEventListener('click', function(evt) {
+        clear();
+    });
+
+    function draw() {
+        (function() {
+            console.log('clearing');
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        })();
+        convexHull(centers);
+        console.log('drawing');
+        for(var i = 0; i < centers.length; ++i) {
+            var center = centers[i];
+            if(draw_circles.checked) {
+                console.log('drawing circles');
+                strokeBigCircle(context, center.x, center.y, '#003300');
+            }
+            if(draw_centers.checked) {
+                console.log('drawing centers');
+                fillLittleCircle(context, center.x, center.y, 'green');
+            }
+        }
+        for(var i = 1; i < chPoints.length; ++i) {
+            var pt1 = chPoints[i-1];
+            var pt2 = chPoints[i];
+            if(high_ch_points.checked) {
+                if(i == 2) {
+                    fillLittleCircle(context, pt1.x, pt1.y, 'blue');
+                }
+                fillLittleCircle(context, pt2.x, pt2.y, 'blue');
+            }
+
+            if(draw_ch_edges.checked) {
+                context.beginPath();
+                context.moveTo(pt1.x, pt1.y);
+                context.lineTo(pt2.x, pt2.y);
+                context.lineWidth = 1;
+                context.stroke();
+            }
+        }
+    }
     
     function getMousePos(canvas, evt) {
         var rect = canvas.getBoundingClientRect();
@@ -17,21 +72,16 @@
         context.beginPath();
         context.arc(x, y, radius, 0, 2 * Math.PI, false);
         context.fillStyle = color;
-        console.dir(context.fill());
+        context.fill();
     }
 
     function strokeBigCircle(context, x, y, color) {
-        var radius = 70;
+        var radius = 300;
         context.beginPath();
         context.arc(x, y, radius, 0, 2 * Math.PI, false);
         context.lineWidth = 5;
         context.strokeStyle = color;
         context.stroke();
-    }
-
-    function addCircle(context, x, y) {
-        strokeBigCircle(context, x, y, '#003300');
-        fillLittleCircle(context, x, y, 'green');
     }
 
     canvas.addEventListener('click', function(evt) {
@@ -41,8 +91,8 @@
         if(false) {
             // grab the circle
         } else {
-            addCircle(context, p.x, p.y);
             centers.push(p);
+            draw();
         }
     });
 
@@ -56,30 +106,17 @@
     }
 
     function convexHull(points) {
+        console.log('computing convex hull');
+        chPoints = [];
         points.sort(function(a,b) {
             return b.x - a.x;
         });
-        var chPoints = [];
         halfHull(points, true).forEach(function(pt) {
             chPoints.push(pt);
         });
         halfHull(points, false).reverse().forEach(function(pt) {
             chPoints.push(pt);
         });
-        for(var i = 1; i < chPoints.length; ++i) {
-            var pt1 = chPoints[i-1];
-            var pt2 = chPoints[i];
-            if(i == 2) {
-                fillLittleCircle(context, pt1.x, pt1.y, 'blue');
-            }
-            fillLittleCircle(context, pt2.x, pt2.y, 'blue');
-
-            context.beginPath();
-            context.moveTo(pt1.x, pt1.y);
-            context.lineTo(pt2.x, pt2.y);
-            context.lineWidth = 1;
-            context.stroke();
-        }
     }
 
     function halfHull(points, left) {
@@ -99,8 +136,10 @@
         return stack;
     }
 
-    document.getElementById('ch').addEventListener('click', function(evt) {
-        console.log('Drawing convex hull');
-        convexHull(centers);
+    checkboxes.forEach(function(cbox) {
+        cbox.addEventListener('click', function(evt) {
+            console.log('Clicked');
+            draw();
+        });
     });
 })();
