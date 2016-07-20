@@ -1,0 +1,5 @@
+inter_disks
+===========
+
+Play around with intersections of disks.  Honestly, mostly just convex
+hull stuff at this point.
