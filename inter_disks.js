@@ -1,4 +1,6 @@
 (function() {
+    var centerRadius = 5;
+    
     var canvas = document.getElementById('c');
     var context = canvas.getContext('2d');
     var draw_centers = document.getElementById('draw_centers');
@@ -68,9 +70,8 @@
     }
 
     function fillLittleCircle(context, x, y, color) {
-        var radius = 5
         context.beginPath();
-        context.arc(x, y, radius, 0, 2 * Math.PI, false);
+        context.arc(x, y, centerRadius, 0, 2 * Math.PI, false);
         context.fillStyle = color;
         context.fill();
     }
@@ -84,16 +85,40 @@
         context.stroke();
     }
 
+    function sortCenters() {
+        centers.sort(function(a,b) {
+            return b.x - a.x;
+        });
+    }
+
+    function sqrDistance(a, b) {
+        return Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2);
+    }
+
     canvas.addEventListener('click', function(evt) {
         var p = getMousePos(canvas, evt);
         console.log('click at (' + p.x + ',' + p.y + ')');
         // if we have clicked on a circle center
-        if(false) {
-            // grab the circle
-        } else {
+        var deleted = false;
+        var fudgeFactor = 10;
+        var threshold = Math.pow(centerRadius, 2) + fudgeFactor;
+        centers.forEach(function(candidate) {
+            console.log('Candidate: (' + candidate.x + ',' + candidate.y + ')');
+            var sqrDist = sqrDistance(p, candidate);
+            console.log('Distance: ' + sqrDist);
+            console.log('Threshold: ' + threshold);
+            if(threshold > sqrDist) {
+                console.log('deleting');
+                var i = centers.indexOf(candidate);
+                centers.splice(i, 1);
+                deleted = true;
+            }
+        });
+        if(!deleted) {
             centers.push(p);
-            draw();
+            sortCenters();
         }
+        draw();
     });
 
     //////////////////////////////////////////////////////////////////////
@@ -108,9 +133,6 @@
     function convexHull(points) {
         console.log('computing convex hull');
         chPoints = [];
-        points.sort(function(a,b) {
-            return b.x - a.x;
-        });
         halfHull(points, true).forEach(function(pt) {
             chPoints.push(pt);
         });
@@ -138,7 +160,7 @@
 
     checkboxes.forEach(function(cbox) {
         cbox.addEventListener('click', function(evt) {
-            console.log('Clicked');
+            console.log('Clicked checkbox');
             draw();
         });
     });
