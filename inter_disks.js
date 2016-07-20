@@ -1,5 +1,6 @@
 (function() {
-    var centerRadius = 5;
+    var pointRadius = 5;
+    var circleRadius = 300;
     
     var canvas = document.getElementById('c');
     var context = canvas.getContext('2d');
@@ -25,15 +26,14 @@
 
     function fillLittleCircle(context, x, y, color) {
         context.beginPath();
-        context.arc(x, y, centerRadius, 0, 2 * Math.PI, false);
+        context.arc(x, y, pointRadius, 0, 2 * Math.PI, false);
         context.fillStyle = color;
         context.fill();
     }
 
     function strokeBigCircle(context, x, y, color) {
-        var radius = 300;
         context.beginPath();
-        context.arc(x, y, radius, 0, 2 * Math.PI, false);
+        context.arc(x, y, circleRadius, 0, 2 * Math.PI, false);
         context.lineWidth = 1;
         context.strokeStyle = color;
         context.stroke();
@@ -136,7 +136,7 @@
         // if we have clicked on a circle center
         var deleted = false;
         var fudgeFactor = 10;
-        var threshold = Math.pow(centerRadius, 2) + fudgeFactor;
+        var threshold = Math.pow(pointRadius, 2) + fudgeFactor;
         centers.forEach(function(candidate) {
             console.log('Candidate: (' + candidate.x + ',' + candidate.y + ')');
             var sqrDist = sqrDistance(p, candidate);
