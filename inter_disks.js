@@ -12,9 +12,6 @@
         draw_centers, draw_circles, high_ch_points, draw_ch_edges
     ];
 
-    var centers = [];
-    var chPoints = [];
-
     function clear() {
         centers = [];
         draw();
@@ -37,41 +34,6 @@
         context.lineWidth = 1;
         context.strokeStyle = color;
         context.stroke();
-    }
-    function isLeftTurn(p1, p2, p3) {
-        var x1 = p2.x - p1.x;
-        var x2 = p3.x - p1.x;
-        var y1 = p2.y - p1.y;
-        var y2 = p3.y - p1.y;
-        return 0 > (x1 * y2 - x2 * y1);
-    }
-
-    function convexHull(points) {
-        console.log('computing convex hull');
-        chPoints = [];
-        halfHull(points, true).forEach(function(pt) {
-            chPoints.push(pt);
-        });
-        halfHull(points, false).reverse().forEach(function(pt) {
-            chPoints.push(pt);
-        });
-    }
-
-    function halfHull(points, left) {
-        if(points.length < 3) {
-            return points;
-        }
-        var stack = [];
-        for(var i = 0; i < points.length; ++i) {
-            var p = points[i];
-            while(stack.length > 1 &&
-                  isLeftTurn(stack[stack.length-2],
-                             stack[stack.length-1], p) == left) {
-                stack.pop();
-            }
-            stack.push(p);
-        }
-        return stack;
     }
 
     function draw() {
