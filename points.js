@@ -40,7 +40,9 @@ Points = (function() {
     //////////////////////////////////////////////////////////////////////
     // Voronoi
     function voronoi(points) {
-        var t = new AVL();
+        var t = new AVL(function(a,b) {
+            return a.x - b.x;
+        });
         var output = [];
         // TODO
         return output;
