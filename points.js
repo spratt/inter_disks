@@ -39,7 +39,12 @@ Points = (function() {
 
     //////////////////////////////////////////////////////////////////////
     // Voronoi
-    
+    function voronoi(points) {
+        var t = new AVL();
+        var output = [];
+        // TODO
+        return output;
+    }
 
-    return {convexHull:convexHull};
+    return {convexHull:convexHull, voronoi:voronoi};
 })();
