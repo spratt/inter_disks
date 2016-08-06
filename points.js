@@ -1,4 +1,5 @@
-Points = (function() {
+"use strict";
+var Points = (function() {
     //////////////////////////////////////////////////////////////////////
     // Convex Hull
     
@@ -35,6 +36,36 @@ Points = (function() {
             chPoints.push(pt);
         });
         return chPoints;
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    // Plane sweep
+    Array.prototype.isSorted = function(cmpFn) {
+        if(cmpFn === undefined) {
+            cmpFn = cmpInc;
+        }
+        var len = this.length;
+        for(var i = 1; i < len; ++i) {
+            if (cmpFn(this[i-1],this[i]) < 0) {
+                return false;
+            }
+        }
+        return true;
+    };
+    function cmpIncX(a,b) {
+        return b.x - a.x;
+    }
+    function cmpIncY(a,b) {
+        return b.y - a.y;
+    }
+    function planeSweep(points, fn, cmpFn) {
+        if(cmpFn === undefined) {
+            cmpFn = cmpIncX;
+        }
+        if(!points.isSorted(cmpFn)) {
+            points.sort(cmpFn);
+        }
+        points.forEach(fn);
     }
 
     //////////////////////////////////////////////////////////////////////

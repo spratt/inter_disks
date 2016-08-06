@@ -1,3 +1,4 @@
+"use strict";
 (function() {
     var pointRadius = 5;
     var circleRadius = 300;
@@ -11,6 +12,7 @@
     var checkboxes = [
         draw_centers, draw_circles, high_ch_points, draw_ch_edges
     ];
+    var centers = [];
 
     function clear() {
         centers = [];
@@ -41,7 +43,7 @@
             console.log('clearing');
             context.clearRect(0, 0, canvas.width, canvas.height);
         })();
-        convexHull(centers);
+        var chPoints = Points.convexHull(centers);
         console.log('drawing');
         for(var i = 0; i < centers.length; ++i) {
             var center = centers[i];

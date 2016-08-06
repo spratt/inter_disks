@@ -1,14 +1,4 @@
 "use strict";
-function assert(condition, message) {
-    if (!condition) {
-        message = message || "Assertion failed";
-        if (typeof Error !== "undefined") {
-            throw new Error(message);
-        }
-        throw message; // Fallback
-    }
-}
-
 var AVL = function(cmp) {
     this.root = null;
     if(this.cmp === undefined) {
@@ -23,9 +13,20 @@ AVL.prototype.print = function() { console.log(this.nodeToString()); };
 AVL.prototype.nodeToString = function(node) {
     if(node === undefined) node = this.root;
     if(node === null) return '';
-    return '' + node.val + '(' +
-        this.nodeToString(node.left) + ',' +
-        this.nodeToString(node.right) + ')';
+    var ret = '';
+    if(node.left === null && node.right === null) {
+        ret += node.val;
+    } else {
+        ret += '(' + node.val;
+        if(node.left !== null) {
+            ret += ' ' + this.nodeToString(node.left);
+        }
+        if(node.right !== null) {
+            ret += ' ' + this.nodeToString(node.right);
+        }
+        ret += ')';
+    }
+    return ret;
 };
 AVL.prototype.find = function(x) {
     var prev = null,
@@ -71,18 +72,18 @@ AVL.prototype.insert = function(x) {
         // x.val < parent.val
         parent.left = node;
     }
-    this.fixSizesFrom(node);
+    AVL.fixSizesFrom(node);
     this.rebalance(node);
 };
-AVL.prototype.resizeNode = function(node) {
+AVL.resizeNode = function(node) {
     var leftSize = 0, rightSize = 0;
     if(node.left !== null) leftSize = node.left.size;
     if(node.right !== null) rightSize = node.right.size;
     node.size = 1 + Math.max(leftSize, rightSize);
 };
-AVL.prototype.fixSizesFrom = function(node) {
+AVL.fixSizesFrom = function(node) {
     while(node !== null) {
-        this.resizeNode(node);
+        AVL.resizeNode(node);
         node = node.parent;
     }
 };
@@ -111,8 +112,8 @@ AVL.prototype.rebalance = function(node) {
         p.parent = node;
         p.right = node.left;
         node.left = p;
-        AVL.prototype.resizeNode(p);
-        AVL.prototype.resizeNode(node);
+        AVL.resizeNode(p);
+        AVL.resizeNode(node);
     }
     //         (p)              (node)
     //         / \              /    \
@@ -126,8 +127,8 @@ AVL.prototype.rebalance = function(node) {
         p.parent = node;
         p.left = node.right;
         node.right = p;
-        AVL.prototype.resizeNode(p);
-        AVL.prototype.resizeNode(node);
+        AVL.resizeNode(p);
+        AVL.resizeNode(node);
     }
     while(node !== null) {
         var leftSize = 0, rightSize = 0;
@@ -156,7 +157,7 @@ AVL.prototype.rebalance = function(node) {
         node = node.parent;
     }
 };
-function test_AVL() {
+AVL.test = function() {
     var a = new AVL();
     for(var i = 0; i < 10; ++i)
         a.insert(i);
